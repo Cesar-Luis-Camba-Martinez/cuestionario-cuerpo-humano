@@ -1,0 +1,242 @@
+:root {
+  --paper: #f7f6f1;
+  --card: #ffffff;
+  --ink: #1e2a26;
+  --muted: #5e6e67;
+  --line: #d9ddd3;
+  --accent: #b8402e;
+  --ok: #2e6b4f;
+  --ok-bg: #e4f0e9;
+  --bad: #a4332a;
+  --bad-bg: #f6e3e0;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+main {
+  width: min(100%, 640px);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Encabezado */
+
+header h1 {
+  margin: 0 0 0.25rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(1.9rem, 4.5vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+header p {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+}
+
+/* Progreso: una barra por pregunta */
+
+.progress {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.35rem;
+  margin-bottom: 1.5rem;
+}
+
+.progress span {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--line);
+  transition: background-color 0.3s ease;
+}
+
+.progress span.done {
+  background: var(--ink);
+}
+
+.progress span.current {
+  background: var(--accent);
+}
+
+/* Tarjeta: esquinas asimétricas, como una ficha impresa */
+
+.card {
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px 16px 4px 16px;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.question {
+  margin: 0 0 1.25rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(1.25rem, 3.5vw, 1.45rem);
+  line-height: 1.3;
+}
+
+/* Opciones */
+
+.options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.option button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.option button:not(:disabled):hover {
+  border-color: var(--ink);
+}
+
+.option button:focus-visible,
+.next:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.option button:disabled {
+  cursor: default;
+}
+
+.letter {
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.option button.correct {
+  background: var(--ok-bg);
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.option button.wrong {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+/* Retroalimentación */
+
+.feedback {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+}
+
+.feedback.ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.feedback.bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+/* Botones de acción */
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.next {
+  padding: 0.75rem 1.4rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--ink);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.next:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Resultado */
+
+.result h2 {
+  margin: 0 0 0.5rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.score {
+  margin: 0 0 0.5rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 3rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.score span {
+  color: var(--ink);
+}
+
+.result p {
+  margin: 0;
+}
+
+/* Accesibilidad */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .progress {
+    gap: 0.2rem;
+  }
+}

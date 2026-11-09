@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>El cuerpo humano · Cuestionario 6.º EGB</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>El cuerpo humano</h1>
+      <p>Lee cada pregunta y elige la única opción correcta.</p>
+    </header>
+
+    <div class="progress" id="progress" aria-hidden="true"></div>
+
+    <section class="card" id="quiz" aria-live="polite">
+      <h2 class="question" id="question"></h2>
+      <ul class="options" id="options"></ul>
+      <p class="feedback" id="feedback" hidden></p>
+      <div class="actions">
+        <button type="button" class="next" id="next" disabled>Siguiente</button>
+      </div>
+    </section>
+
+    <section class="card result" id="result" hidden>
+      <h2>Resultado final</h2>
+      <p class="score"><span id="score"></span> de 10</p>
+      <p id="message"></p>
+      <div class="actions">
+        <button type="button" class="next" id="restart">Reiniciar cuestionario</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        q: "¿Cuál es la función principal del sistema digestivo?",
+        options: [
+          "Transportar oxígeno a las células",
+          "Descomponer los alimentos para obtener nutrientes",
+          "Filtrar la sangre y producir orina",
+          "Coordinar las acciones del cuerpo mediante impulsos eléctricos"
+        ],
+        answer: 1,
+        explain: "El sistema digestivo descompone los alimentos para que el cuerpo pueda absorber sus nutrientes."
+      },
+      {
+        q: "¿Qué órgano se encarga de bombear la sangre por todo el cuerpo?",
+        options: ["Pulmón", "Hígado", "Riñón", "Corazón"],
+        answer: 3,
+        explain: "El corazón impulsa la sangre a través de las arterias y venas."
+      },
+      {
+        q: "¿Cuál es el órgano principal del sistema respiratorio?",
+        options: ["Pulmones", "Estómago", "Vejiga", "Bazo"],
+        answer: 0,
+        explain: "Los pulmones intercambian oxígeno y dióxido de carbono con la sangre."
+      },
+      {
+        q: "¿Qué sistema coordina las acciones del cuerpo mediante señales eléctricas?",
+        options: ["Sistema nervioso", "Sistema óseo", "Sistema muscular", "Sistema linfático"],
+        answer: 0,
+        explain: "El sistema nervioso transmite señales eléctricas entre el cerebro, la médula y el resto del cuerpo."
+      },
+      {
+        q: "¿Aproximadamente cuántos huesos tiene un adulto?",
+        options: ["60", "106", "206", "306"],
+        answer: 2,
+        explain: "Un adulto tiene unos 206 huesos; los bebés nacen con más, y algunos se unen al crecer."
+      },
+      {
+        q: "¿Qué función cumplen los músculos?",
+        options: [
+          "Almacenar grasa para obtener energía",
+          "Permitir el movimiento del cuerpo",
+          "Producir glóbulos rojos",
+          "Transportar los desechos hacia la piel"
+        ],
+        answer: 1,
+        explain: "Los músculos se contraen y hacen posible caminar, levantar objetos y mover los órganos internos."
+      },
+      {
+        q: "¿Qué órganos filtran la sangre y forman la orina?",
+        options: ["Pulmones", "Riñones", "Corazón", "Páncreas"],
+        answer: 1,
+        explain: "Los riñones eliminan los desechos de la sangre y producen la orina."
+      },
+      {
+        q: "¿Qué gas toman los pulmones del aire y necesitan las células para realizar sus funciones?",
+        options: ["Nitrógeno", "Dióxido de carbono", "Oxígeno", "Helio"],
+        answer: 2,
+        explain: "Las células usan oxígeno para liberar energía de los nutrientes."
+      },
+      {
+        q: "¿Cuál es la unidad básica de los seres vivos?",
+        options: ["Tejido", "Órgano", "Célula", "Sistema"],
+        answer: 2,
+        explain: "La célula es la unidad más pequeña que cumple las funciones de la vida."
+      },
+      {
+        q: "¿Qué estructura ósea protege el cerebro?",
+        options: ["Columna vertebral", "Cráneo", "Costillas", "Pelvis"],
+        answer: 1,
+        explain: "El cráneo es una caja ósea que rodea y protege el encéfalo."
+      }
+    ];
+
+    const letters = ["a", "b", "c", "d"];
+    let current = 0;
+    let score = 0;
+    let answered = false;
+
+    const el = {
+      progress: document.getElementById("progress"),
+      quiz: document.getElementById("quiz"),
+      question: document.getElementById("question"),
+      options: document.getElementById("options"),
+      feedback: document.getElementById("feedback"),
+      next: document.getElementById("next"),
+      result: document.getElementById("result"),
+      score: document.getElementById("score"),
+      message: document.getElementById("message"),
+      restart: document.getElementById("restart")
+    };
+
+    function buildProgress() {
+      el.progress.textContent = "";
+      questions.forEach(() => el.progress.appendChild(document.createElement("span")));
+    }
+
+    function updateProgress() {
+      [...el.progress.children].forEach((bar, i) => {
+        bar.className = i < current ? "done" : i === current ? "current" : "";
+      });
+    }
+
+    function render() {
+      const item = questions[current];
+      answered = false;
+      updateProgress();
+      el.question.textContent = item.q;
+      el.options.textContent = "";
+      item.options.forEach((text, i) => {
+        const li = document.createElement("li");
+        li.className = "option";
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.dataset.index = i;
+
+        const letter = document.createElement("span");
+        letter.className = "letter";
+        letter.textContent = letters[i];
+
+        const label = document.createElement("span");
+        label.textContent = text;
+
+        btn.append(letter, label);
+        btn.addEventListener("click", () => choose(i));
+        li.appendChild(btn);
+        el.options.appendChild(li);
+      });
+      el.feedback.hidden = true;
+      el.feedback.textContent = "";
+      el.feedback.className = "feedback";
+      el.next.disabled = true;
+      el.next.textContent = current === questions.length - 1 ? "Ver resultado" : "Siguiente";
+    }
+
+    function choose(i) {
+      if (answered) return;
+      answered = true;
+      const item = questions[current];
+      const buttons = el.options.querySelectorAll("button");
+      buttons.forEach(b => (b.disabled = true));
+
+      const isCorrect = i === item.answer;
+      if (isCorrect) score++;
+
+      buttons[i].classList.add(isCorrect ? "correct" : "wrong");
+      if (!isCorrect) buttons[item.answer].classList.add("correct");
+
+      el.feedback.hidden = false;
+      el.feedback.className = "feedback " + (isCorrect ? "ok" : "bad");
+      el.feedback.textContent = (isCorrect ? "Correcto. " : "Incorrecto. La respuesta es " + letters[item.answer] + ". ") + item.explain;
+      el.next.disabled = false;
+      el.next.focus();
+    }
+
+    function showResult() {
+      el.quiz.hidden = true;
+      el.progress.hidden = true;
+      el.result.hidden = false;
+      el.score.textContent = score;
+      let msg;
+      if (score >= 9) msg = "Excelente dominio del tema.";
+      else if (score >= 7) msg = "Muy buen trabajo. Repasa las respuestas que fallaste.";
+      else msg = "Vuelve a revisar el tema y prueba de nuevo.";
+      el.message.textContent = msg;
+      el.restart.focus();
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      el.result.hidden = true;
+      el.quiz.hidden = false;
+      el.progress.hidden = false;
+      render();
+    }
+
+    el.next.addEventListener("click", () => {
+      if (current < questions.length - 1) {
+        current++;
+        render();
+      } else {
+        showResult();
+      }
+    });
+
+    el.restart.addEventListener("click", restart);
+
+    buildProgress();
+    render();
+  </script>
+</body>
+</html>
